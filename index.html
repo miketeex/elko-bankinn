@@ -280,7 +280,7 @@
   async function loadInventory() {
     try {
       const res = await fetch(FLOW_GET);
-      const items = await res.json();
+      const data = await res.json(); const items = data.value || data;
       const grid = document.getElementById('inventoryGrid');
       grid.innerHTML = '';
       items.forEach(item => {
@@ -318,7 +318,8 @@
   async function loadStations() {
     try {
       const res = await fetch(FLOW_STATIONS);
-      const items = await res.json();
+      const data = await res.json();
+      const items = data.value || data;
       const dd1 = document.getElementById('fStarfsstod');
       const dd2 = document.getElementById('fAfhending');
       items.forEach(item => {
