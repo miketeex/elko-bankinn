@@ -424,19 +424,37 @@
 
 try {
   // Check for date conflicts
-  const checkRes = await fetch(FLOW_CHECK, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ DagsetningFra: fra, DagsetningTil: til })
-  });
-  const conflicts = await checkRes.json();
-  const conflictData = conflicts.value || conflicts;
+const checkRes = await fetch(FLOW_CHECK, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ DagsetningFra: fra, DagsetningTil: til })
+});
+const conflicts = await checkRes.json();
+const conflictData = conflicts.value || conflicts;
 
-  if (Array.isArray(conflictData) && conflictData.length > 0) {
-    const conflictNames = conflictData.map(c => c.Vara).join(', ');
-    notify(`Eftirfarandi vörur eru ekki tiltækar á völdum dagsetningum: ${conflictNames}`, 'error');
-    return;
+// Count borrowed per item name
+const borrowedCount = {};
+if (Array.isArray(conflictData)) {
+  conflictData.forEach(c => {
+    borrowedCount[c.Vara] = (borrowedCount[c.Vara] || 0) + 1;
+  });
+}
+
+// Check if any selected item exceeds available quantity
+const unavailable = [];
+for (const [itemId] of selectedItems) {
+  const item = inventoryData[itemId];
+  const borrowed = borrowedCount[item.name] || 0;
+  const available = item.magn - borrowed;
+  if (available <= 0) {
+    unavailable.push(item.name);
   }
+}
+
+if (unavailable.length > 0) {
+  notify(`Eftirfarandi vörur eru ekki tiltækar á völdum dagsetningum: ${unavailable.join(', ')}`, 'error');
+  return;
+}
       for (const [itemId] of selectedItems) {
         const item = inventoryData[itemId];
         await fetch(FLOW_POST, {
