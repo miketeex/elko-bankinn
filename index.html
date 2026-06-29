@@ -292,7 +292,7 @@
         const name = item.Title || '';
         const numer = item.NinjaSlushiKrapv_x00e9_l || '';
         const magn = item.Magn || 0;
-        const img = item.Mynd?.[0]?.serverRelativeUrl || '';
+        const img = item.MyndURL || '';
         cart[id] = cart[id] || 0;
         inventoryData[id] = { name, numer, magn };
 
