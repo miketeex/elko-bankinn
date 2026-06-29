@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELKO Bankinn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --elko-green: #638b2c;
+      --elko-dark: #00126b;
+      --elko-light: #f4f7ee;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Open Sans', sans-serif; background: #f9f9f9; }
+
+    .elko-header {
+      background: var(--elko-green);
+      color: white;
+      padding: 20px 30px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .elko-container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+
+    .elko-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .elko-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .elko-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+    }
+
+    .elko-card-body { padding: 12px; }
+    .elko-card-title { font-weight: 600; font-size: 14px; color: var(--elko-dark); }
+    .elko-card-sub { font-size: 12px; color: #666; margin-top: 4px; }
+
+    .elko-qty {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .elko-btn-qty {
+      background: var(--elko-green);
+      color: white;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .elko-btn-qty:disabled { background: #ccc; cursor: not-allowed; }
+    .elko-qty-num { font-size: 16px; font-weight: bold; min-width: 20px; text-align: center; }
+
+    .elko-cart-bar {
+      background: var(--elko-dark);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .elko-btn {
+      background: var(--elko-green);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    .elko-btn:hover { background: #4e6e22; }
+    .elko-btn-secondary { background: #999; }
+    .elko-btn-secondary:hover { background: #777; }
+
+    .elko-form {
+      background: white;
+      padding: 24px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .elko-form.active { display: block; }
+    .elko-form h2 { color: var(--elko-dark); margin-bottom: 20px; }
+
+    .elko-field { margin-bottom: 16px; }
+    .elko-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #333; }
+    .elko-field input, .elko-field select {
+      width: 100%;
+      padding: 10px;
+      border: 1.5px solid var(--elko-green);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    .elko-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .elko-terms-link {
+      color: var(--elko-green);
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 13px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .elko-check { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: 13px; }
+
+    .elko-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .elko-overlay.active { display: flex; }
+
+    .elko-modal {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .elko-modal h3 { color: var(--elko-dark); margin-bottom: 16px; }
+    .elko-modal p { font-size: 13px; line-height: 1.7; color: #333; margin-bottom: 12px; }
+
+    .ekki-til {
+      background: rgba(0,0,0,0.6);
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+      text-align: center;
+      padding: 4px;
+    }
+
+    .elko-notify {
+      padding: 12px 20px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .elko-notify.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; display: block; }
+    .elko-notify.error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; display: block; }
+  </style>
+</head>
+<body>
+
+<div class="elko-header">📦 Bankinn</div>
+
+<div class="elko-container">
+
+  <div id="notify" class="elko-notify"></div>
+
+  <div class="elko-cart-bar" id="cartBar">
+    <span>Valdir hlutir: <strong id="cartCount">0</strong> — Samtals magn: <strong id="cartTotal">0</strong></span>
+    <button class="elko-btn" onclick="goToForm()">Áfram →</button>
+  </div>
+
+  <div class="elko-grid" id="inventoryGrid">
+    <p>Hleður vörulista...</p>
+  </div>
+
+  <div class="elko-form" id="submitForm">
+    <h2>Lánsupplýsingar</h2>
+
+    <div class="elko-field">
+      <label>Nafn *</label>
+      <input type="text" id="fNafn" placeholder="Fullt nafn">
+    </div>
+
+    <div class="elko-field">
+      <label>Netfang *</label>
+      <input type="email" id="fNetfang" placeholder="netfang@elko.is">
+    </div>
+
+    <div class="elko-field">
+      <label>Símanúmer *</label>
+      <input type="tel" id="fSimi" placeholder="7 stafir">
+    </div>
+
+    <div class="elko-field">
+      <label>Starfsstöð *</label>
+      <select id="fStarfsstod">
+        <option value="">-- Veldu starfsstöð --</option>
+      </select>
+    </div>
+
+    <div class="elko-field">
+      <label>Afhendingarstaður *</label>
+      <select id="fAfhending">
+        <option value="">-- Veldu afhendingarstað --</option>
+      </select>
+    </div>
+
+    <div class="elko-dates">
+      <div class="elko-field">
+        <label>Dagsetning frá *</label>
+        <input type="date" id="fFra">
+      </div>
+      <div class="elko-field">
+        <label>Dagsetning til *</label>
+        <input type="date" id="fTil">
+      </div>
+    </div>
+
+    <span class="elko-terms-link" onclick="openTerms()">📄 Lesa skilmála</span>
+
+    <div class="elko-check">
+      <input type="checkbox" id="fTerms">
+      <label for="fTerms">Ég samþykki skilmála</label>
+    </div>
+
+    <button class="elko-btn" onclick="submitForm()">Sækja um</button>
+    <button class="elko-btn elko-btn-secondary" style="margin-left:10px;" onclick="goBack()">← Til baka</button>
+  </div>
+
+</div>
+
+<div class="elko-overlay" id="termsOverlay">
+  <div class="elko-modal">
+    <h3>Skilmálar láns</h3>
+    <p>Starfsmaður ber ábyrgð á að skila öllum lánuðum búnaði, vörum eða öðrum munum í sama ástandi og þeir voru afhentir, heilum, hreinum, fullhlöðnum eftir því sem við á og með öllum tilheyrandi fylgihlutum, innan þess tíma sem kveðið er á um í umsókn og staðfestingu láns.</p>
+    <p>Mikilvægt er að fara vel með allt sem tekið er að láni. Komi upp skemmdir sem teljast ekki eðlilegt slit eða afleiðing eðlilegrar notkunar getur starfsmaður borið ábyrgð á kostnaði vegna viðgerðar eða endurnýjunar á viðkomandi hlut.</p>
+    <p>Með því að senda inn umsókn og taka við staðfestingu á láni staðfestir starfsmaður að hann hafi kynnt sér og samþykki framangreinda skilmála.</p>
+    <button class="elko-btn" onclick="closeTerms()">Loka</button>
+  </div>
+</div>
+
+<script>
+  const FLOW_GET = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/35e9048502214aa691f1909f1f2be1d3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=COQVrXAbckH0OcoLZnE7jIOb3pS9X8IJ1nNOlP7cmGg';
+  const FLOW_POST = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/35da15861bd04ef4a125fbba0d8bb8a6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ECFGUdny1wGfJybbY-H9FrquVfl4vh3y8xRkqUiqCmk';
+  const FLOW_STATIONS = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/99d31cd7bd064112ae8f11fa227cecb1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YCqeHhT0B-uXOE9rSOoMHJ7NFtSsjnZJz2tWB9kG2NA';
+
+  let cart = {};
+  let inventoryData = {};
+
+  function notify(msg, type) {
+    const el = document.getElementById('notify');
+    el.textContent = msg;
+    el.className = 'elko-notify ' + type;
+    setTimeout(() => el.className = 'elko-notify', 4000);
+  }
+
+  async function loadInventory() {
+    try {
+      const res = await fetch(FLOW_GET);
+      const items = await res.json();
+      const grid = document.getElementById('inventoryGrid');
+      grid.innerHTML = '';
+      items.forEach(item => {
+        const id = item.ID;
+        const name = item.Title || '';
+        const numer = item.NinjaSlushiKrapv_x00e9_l || '';
+        const magn = item.Magn || 0;
+        const img = item.Mynd?.[0]?.serverRelativeUrl || '';
+        cart[id] = cart[id] || 0;
+        inventoryData[id] = { name, numer, magn };
+
+        const card = document.createElement('div');
+        card.className = 'elko-card';
+        card.id = 'card-' + id;
+        card.innerHTML = `
+          ${img ? `<img src="${img}" alt="${name}">` : ''}
+          ${magn <= 0 ? '<div class="ekki-til">Ekki til</div>' : ''}
+          <div class="elko-card-body">
+            <div class="elko-card-title">${name}</div>
+            <div class="elko-card-sub">Nr: ${numer} — Magn: ${magn}</div>
+            <div class="elko-qty">
+              <button class="elko-btn-qty" onclick="changeQty(${id}, -1)" ${magn <= 0 ? 'disabled' : ''}>−</button>
+              <span class="elko-qty-num" id="qty-${id}">0</span>
+              <button class="elko-btn-qty" onclick="changeQty(${id}, 1, ${magn})" ${magn <= 0 ? 'disabled' : ''}>+</button>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+    } catch(e) {
+      document.getElementById('inventoryGrid').innerHTML = '<p>Villa við að sækja vörulista.</p>';
+      console.error(e);
+    }
+  }
+
+  async function loadStations() {
+    try {
+      const res = await fetch(FLOW_STATIONS);
+      const items = await res.json();
+      const dd1 = document.getElementById('fStarfsstod');
+      const dd2 = document.getElementById('fAfhending');
+      items.forEach(item => {
+        const opt1 = document.createElement('option');
+        opt1.value = item.Title;
+        opt1.textContent = item.Title;
+        dd1.appendChild(opt1);
+        const opt2 = opt1.cloneNode(true);
+        dd2.appendChild(opt2);
+      });
+    } catch(e) {
+      console.error('Villa við að sækja starfsstöðvar', e);
+    }
+  }
+
+  function changeQty(id, delta, max) {
+    const current = cart[id] || 0;
+    const newVal = Math.max(0, current + delta);
+    if (delta > 0 && max !== undefined && newVal > max) return;
+    cart[id] = newVal;
+    document.getElementById('qty-' + id).textContent = newVal;
+    updateCartBar();
+  }
+
+  function updateCartBar() {
+    const count = Object.values(cart).filter(v => v > 0).length;
+    const total = Object.values(cart).reduce((a, b) => a + b, 0);
+    document.getElementById('cartCount').textContent = count;
+    document.getElementById('cartTotal').textContent = total;
+  }
+
+  function goToForm() {
+    const hasItems = Object.values(cart).some(v => v > 0);
+    if (!hasItems) { notify('Veldu að minnsta kosti eina vöru.', 'error'); return; }
+    document.getElementById('inventoryGrid').style.display = 'none';
+    document.getElementById('cartBar').style.display = 'none';
+    document.getElementById('submitForm').classList.add('active');
+  }
+
+  function goBack() {
+    document.getElementById('inventoryGrid').style.display = 'grid';
+    document.getElementById('cartBar').style.display = 'flex';
+    document.getElementById('submitForm').classList.remove('active');
+  }
+
+  function openTerms() { document.getElementById('termsOverlay').classList.add('active'); }
+  function closeTerms() { document.getElementById('termsOverlay').classList.remove('active'); }
+
+  async function submitForm() {
+    const nafn = document.getElementById('fNafn').value.trim();
+    const netfang = document.getElementById('fNetfang').value.trim();
+    const simi = document.getElementById('fSimi').value.trim();
+    const starfsstod = document.getElementById('fStarfsstod').value;
+    const afhending = document.getElementById('fAfhending').value;
+    const fra = document.getElementById('fFra').value;
+    const til = document.getElementById('fTil').value;
+    const terms = document.getElementById('fTerms').checked;
+
+    if (!nafn || !netfang || !terms) { notify('Fylla þarf út nafn, netfang og samþykkja skilmála.', 'error'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(netfang)) { notify('Netfang er ekki gilt.', 'error'); return; }
+    if (!/^\d{7}$/.test(simi)) { notify('Símanúmer verður að vera 7 tölustafir.', 'error'); return; }
+    if (!starfsstod) { notify('Veldu starfsstöð.', 'error'); return; }
+    if (!afhending) { notify('Veldu afhendingarstað.', 'error'); return; }
+    if (!fra || !til) { notify('Veldu láns- og skiladag.', 'error'); return; }
+    if (fra > til) { notify('Skiladagur má ekki vera á undan lánsdag.', 'error'); return; }
+
+    const selectedItems = Object.entries(cart).filter(([,v]) => v > 0);
+
+    try {
+      for (const [itemId] of selectedItems) {
+        const item = inventoryData[itemId];
+        await fetch(FLOW_POST, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            Nafn: nafn,
+            Netfang: netfang,
+            Simanumer: simi,
+            Vara: item.name,
+            Numer: item.numer,
+            DagsetningFra: fra,
+            DagsetningTil: til,
+            Starfsstod: starfsstod,
+            Afhendingarstadur: afhending
+          })
+        });
+      }
+      notify('Pöntun móttekin!', 'success');
+      cart = {};
+      updateCartBar();
+      goBack();
+      loadInventory();
+    } catch(e) {
+      notify('Villa við að senda beiðni. Reyndu aftur.', 'error');
+      console.error(e);
+    }
+  }
+
+  loadInventory();
+  loadStations();
+</script>
+
+</body>
+</html>
