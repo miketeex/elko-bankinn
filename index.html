@@ -279,7 +279,11 @@
 
   async function loadInventory() {
     try {
-      const res = await fetch(FLOW_GET);
+      const res = await fetch(FLOW_GET, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({})
+});
       const data = await res.json(); const items = data.value || data;
       const grid = document.getElementById('inventoryGrid');
       grid.innerHTML = '';
@@ -317,7 +321,11 @@
 
   async function loadStations() {
     try {
-      const res = await fetch(FLOW_STATIONS);
+      const res = await fetch(FLOW_STATIONS, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({})
+});
       const data = await res.json();
       const items = data.value || data;
       const dd1 = document.getElementById('fStarfsstod');
