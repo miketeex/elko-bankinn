@@ -16,15 +16,13 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Open Sans', sans-serif; background: #f9f9f9; }
 
-    .elko-header {
-      background: var(--elko-green);
-      color: white;
-      padding: 20px 30px;
-      font-size: 28px;
-      font-weight: bold;
-    }
+.elko-header {
+  background: var(--elko-dark);
+  color: white;
+  padding: 20px 30px;
+}
 
-    .elko-container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+.elko-container { max-width: 900px; margin: 30px auto; padding: 0 20px 40px 20px; }
 
     .elko-grid {
       display: grid;
@@ -60,6 +58,7 @@
 .elko-qty {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   margin-top: auto;
   padding-top: 10px;
@@ -91,16 +90,17 @@
     .elko-btn-qty:disabled { background: #ccc; cursor: not-allowed; }
     .elko-qty-num { font-size: 16px; font-weight: bold; min-width: 20px; text-align: center; }
 
-    .elko-cart-bar {
-      background: var(--elko-dark);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+.elko-cart-bar {
+  background: var(--elko-dark);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
 
     .elko-btn {
       background: var(--elko-green);
@@ -202,9 +202,10 @@
 </head>
 <body>
 
-<div class="elko-header" style="display:flex; align-items:center; gap:16px;">
-  <img src="images/ELKO_logo_SVG.svg" alt="ELKO" style="height:40px;">
-  <span>Partýlager — Bankinn</span>
+<div class="elko-header">
+  <img src="images/ELKO_logo_SVG.svg" alt="ELKO" style="height:36px; display:block; margin-bottom:6px;">
+  <div style="font-size:11px; font-weight:400; opacity:0.85; letter-spacing:1px; text-transform:uppercase;">Partýlager</div>
+  <div style="font-size:26px; font-weight:700; line-height:1.1;">Bankinn</div>
 </div>
 
 <div class="elko-container">
