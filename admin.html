@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELKO Bankinn — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --elko-green: #638b2c;
+      --elko-dark: #00126b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Open Sans', sans-serif; background: #f9f9f9; }
+
+    .elko-header {
+      background: var(--elko-dark);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .elko-header img { height: 36px; }
+    .elko-header h1 { font-size: 22px; }
+    .elko-header span { font-size: 11px; opacity: 0.7; display: block; }
+
+    .elko-container { max-width: 1100px; margin: 30px auto; padding: 0 20px 40px 20px; }
+
+    .elko-login {
+      max-width: 400px;
+      margin: 100px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .elko-login h2 { color: var(--elko-dark); margin-bottom: 20px; }
+
+    .elko-field { margin-bottom: 16px; }
+    .elko-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #333; }
+    .elko-field input, .elko-field select {
+      width: 100%;
+      padding: 10px;
+      border: 1.5px solid var(--elko-green);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    .elko-btn {
+      background: var(--elko-green);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    .elko-btn:hover { background: #4e6e22; }
+    .elko-btn-danger { background: #c62828; }
+    .elko-btn-danger:hover { background: #a01010; }
+    .elko-btn-sm {
+      padding: 5px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+    }
+
+    .elko-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .elko-tab {
+      padding: 10px 24px;
+      border-radius: 6px;
+      border: 2px solid var(--elko-dark);
+      background: white;
+      color: var(--elko-dark);
+      cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .elko-tab.active {
+      background: var(--elko-dark);
+      color: white;
+    }
+
+    .elko-panel { display: none; }
+    .elko-panel.active { display: block; }
+
+    .elko-table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    th {
+      background: var(--elko-dark);
+      color: white;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    td {
+      padding: 10px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid #eee;
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f5f5f5; }
+
+    .stada-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .stada-Nýtt { background: #e3f2fd; color: #1565c0; }
+    .stada-Í.láni { background: #fff3e0; color: #e65100; }
+    .stada-Skilað { background: #e8f5e9; color: #2e7d32; }
+    .stada-Hafnað { background: #ffebee; color: #c62828; }
+
+    .elko-notify {
+      padding: 12px 20px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .elko-notify.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; display: block; }
+    .elko-notify.error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; display: block; }
+
+    .elko-filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .elko-filters select {
+      padding: 8px 12px;
+      border: 1.5px solid var(--elko-dark);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    .overdue { background: #fff3e0 !important; }
+  </style>
+</head>
+<body>
+
+<div class="elko-header">
+  <img src="images/ELKO_logo_SVG.svg" alt="ELKO">
+  <div>
+    <span>Partýlager</span>
+    <h1>Bankinn — Stjórnborð</h1>
+  </div>
+</div>
+
+<!-- Login -->
+<div id="loginPanel">
+  <div class="elko-login">
+    <h2>Innskráning</h2>
+    <div class="elko-field">
+      <label>Lykilorð</label>
+      <input type="password" id="passwordInput" placeholder="Sláðu inn lykilorð" onkeydown="if(event.key==='Enter') login()">
+    </div>
+    <button class="elko-btn" onclick="login()">Innskrá</button>
+    <p id="loginError" style="color:#c62828; margin-top:10px; font-size:13px; display:none;">Rangt lykilorð</p>
+  </div>
+</div>
+
+<!-- Admin Dashboard -->
+<div id="adminPanel" style="display:none;">
+  <div class="elko-container">
+
+    <div id="notify" class="elko-notify"></div>
+
+    <div class="elko-tabs">
+      <button class="elko-tab active" onclick="switchTab('requests', this)">Beiðnir</button>
+      <button class="elko-tab" onclick="switchTab('inventory', this)">Birgðir</button>
+    </div>
+
+    <!-- Requests Panel -->
+    <div class="elko-panel active" id="panel-requests">
+      <div class="elko-filters">
+        <select id="filterStada" onchange="filterRequests()">
+          <option value="">Allar stöður</option>
+          <option value="Nýtt">Nýtt</option>
+          <option value="Í láni">Í láni</option>
+          <option value="Skilað">Skilað</option>
+          <option value="Hafnað">Hafnað</option>
+        </select>
+        <button class="elko-btn" onclick="loadRequests()">🔄 Uppfæra</button>
+      </div>
+      <div class="elko-table-wrap">
+        <table id="requestsTable">
+          <thead>
+            <tr>
+              <th>Tilvísun</th>
+              <th>Nafn</th>
+              <th>Netfang</th>
+              <th>Vara</th>
+              <th>Starfsstöð</th>
+              <th>Frá</th>
+              <th>Til</th>
+              <th>Staða</th>
+              <th>Aðgerð</th>
+            </tr>
+          </thead>
+          <tbody id="requestsBody">
+            <tr><td colspan="9">Hleður...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Inventory Panel -->
+    <div class="elko-panel" id="panel-inventory">
+      <div class="elko-filters">
+        <button class="elko-btn" onclick="loadInventory()">🔄 Uppfæra</button>
+      </div>
+      <div class="elko-table-wrap">
+        <table id="inventoryTable">
+          <thead>
+            <tr>
+              <th>Vara</th>
+              <th>Númer</th>
+              <th>Flokkur</th>
+              <th>Magn</th>
+              <th>Tiltækt</th>
+              <th>Aðgerð</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryBody">
+            <tr><td colspan="6">Hleður...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const PASSWORD = 'Elko2026';
+
+  const FLOW_REQUESTS = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31f67dd03aef4ecfbc49c36104369741/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=nOIKq81U5PuFH53TWvfvXweoMF6OK802UiIOZleRcNY';
+  const FLOW_UPDATE_STADA = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cccfb4d7f0a04cc68c58f577821be76b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=R47t77wnCwbRNjFFkYQHYlvZ9dqJ0DqsiVmny7zklnU';
+  const FLOW_UPDATE_VARA = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/692c723ba5464aeb85c402dca1112590/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OJf_QbnbKw7FjtUy-S1JXyKyhcChzCN-DjJbCYRLMRs';
+  const FLOW_GET_INVENTORY = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/35e9048502214aa691f1909f1f2be1d3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=COQVrXAbckH0OcoLZnE7jIOb3pS9X8IJ1nNOlP7cmGg';
+
+  let allRequests = [];
+  let allInventory = [];
+
+  function login() {
+    const pwd = document.getElementById('passwordInput').value;
+    if (pwd === PASSWORD) {
+      document.getElementById('loginPanel').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      loadRequests();
+      loadInventory();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
+
+  function notify(msg, type) {
+    const el = document.getElementById('notify');
+    el.textContent = msg;
+    el.className = 'elko-notify ' + type;
+    setTimeout(() => el.className = 'elko-notify', 4000);
+  }
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.elko-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.elko-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + tab).classList.add('active');
+  }
+
+  async function loadRequests() {
+    try {
+      const res = await fetch(FLOW_REQUESTS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      const data = await res.json();
+      allRequests = data.value || data;
+      filterRequests();
+    } catch(e) {
+      document.getElementById('requestsBody').innerHTML = '<tr><td colspan="9">Villa við að sækja beiðnir.</td></tr>';
+      console.error(e);
+    }
+  }
+
+  function filterRequests() {
+    const stada = document.getElementById('filterStada').value;
+    const filtered = stada ? allRequests.filter(r => r.Sta_x00f0_a?.Value === stada) : allRequests;
+    renderRequests(filtered);
+  }
+
+  function renderRequests(items) {
+    const tbody = document.getElementById('requestsBody');
+    if (!items.length) { tbody.innerHTML = '<tr><td colspan="9">Engar beiðnir fundust.</td></tr>'; return; }
+
+    const today = new Date().toISOString().split('T')[0];
+    tbody.innerHTML = items.map(r => {
+      const stada = r.Sta_x00f0_a?.Value || '';
+      const til = r.Dagsetningtil?.split('T')[0] || '';
+      const overdue = stada === 'Í láni' && til < today;
+      return `<tr class="${overdue ? 'overdue' : ''}">
+        <td>${r.Title || ''}</td>
+        <td>${r.Nafn || ''}</td>
+        <td>${r.Netfang || ''}</td>
+        <td>${r.Vara || ''}</td>
+        <td>${r.Starfsst_x00f6__x00f0_ || ''}</td>
+        <td>${r.Dagsetningfr_x00e1_?.split('T')[0] || ''}</td>
+        <td>${til}${overdue ? ' ⚠️' : ''}</td>
+        <td><span class="stada-badge stada-${stada.replace(' ', '.')}">${stada}</span></td>
+        <td>
+          <select onchange="updateStada(${r.ID}, this.value)" style="padding:4px 8px; border:1px solid #ccc; border-radius:4px; font-size:12px;">
+            <option value="">-- Breyta --</option>
+            <option value="Nýtt">Nýtt</option>
+            <option value="Í láni">Í láni</option>
+            <option value="Skilað">Skilað</option>
+            <option value="Hafnað">Hafnað</option>
+          </select>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function updateStada(id, stada) {
+    if (!stada) return;
+    try {
+      await fetch(FLOW_UPDATE_STADA, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ID: id, Stada: stada })
+      });
+      notify('Staða uppfærð!', 'success');
+      loadRequests();
+    } catch(e) {
+      notify('Villa við að uppfæra stöðu.', 'error');
+      console.error(e);
+    }
+  }
+
+  async function loadInventory() {
+    try {
+      const res = await fetch(FLOW_GET_INVENTORY, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      const data = await res.json();
+      allInventory = data.value || data;
+      renderInventory(allInventory);
+    } catch(e) {
+      document.getElementById('inventoryBody').innerHTML = '<tr><td colspan="6">Villa við að sækja birgðir.</td></tr>';
+      console.error(e);
+    }
+  }
+
+  function renderInventory(items) {
+    const tbody = document.getElementById('inventoryBody');
+    if (!items.length) { tbody.innerHTML = '<tr><td colspan="6">Engar vörur fundust.</td></tr>'; return; }
+
+    tbody.innerHTML = items.map(item => {
+      const tiltaekt = item.Tilt_x00e6_kt;
+      const magn = item.Magn || 0;
+      return `<tr>
+        <td>${item.Title || ''}</td>
+        <td>${item.NinjaSlushiKrapv_x00e9_l || ''}</td>
+        <td>${item.Flokkur?.Value || ''}</td>
+        <td>
+          <input type="number" value="${magn}" min="0" id="magn-${item.ID}" 
+            style="width:60px; padding:4px; border:1px solid #ccc; border-radius:4px; font-size:12px;">
+        </td>
+        <td>
+          <select id="tiltaekt-${item.ID}" style="padding:4px 8px; border:1px solid #ccc; border-radius:4px; font-size:12px;">
+            <option value="true" ${tiltaekt ? 'selected' : ''}>Já</option>
+            <option value="false" ${!tiltaekt ? 'selected' : ''}>Nei</option>
+          </select>
+        </td>
+        <td>
+          <button class="elko-btn elko-btn-sm" onclick="updateVara(${item.ID})">Vista</button>
+          <button class="elko-btn elko-btn-sm elko-btn-danger" style="margin-left:4px;" 
+            onclick="markDamaged(${item.ID})">Skemmt</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function updateVara(id) {
+    const magn = parseInt(document.getElementById('magn-' + id).value);
+    const tiltaekt = document.getElementById('tiltaekt-' + id).value === 'true';
+    try {
+      await fetch(FLOW_UPDATE_VARA, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ID: id, Magn: magn, Tiltaekt: tiltaekt })
+      });
+      notify('Vara uppfærð!', 'success');
+      loadInventory();
+    } catch(e) {
+      notify('Villa við að uppfæra vöru.', 'error');
+      console.error(e);
+    }
+  }
+
+  async function markDamaged(id) {
+    if (!confirm('Merkja þessa vöru sem skemmta og setja magn í 0?')) return;
+    try {
+      await fetch(FLOW_UPDATE_VARA, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ID: id, Magn: 0, Tiltaekt: false })
+      });
+      notify('Vara merkt sem skemmd!', 'success');
+      loadInventory();
+    } catch(e) {
+      notify('Villa við að uppfæra vöru.', 'error');
+      console.error(e);
+    }
+  }
+</script>
+
+</body>
+</html>
