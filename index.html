@@ -32,12 +32,14 @@
       margin-bottom: 30px;
     }
 
-    .elko-card {
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+.elko-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
 
     .elko-card img {
       width: 100%;
@@ -45,17 +47,34 @@
       object-fit: cover;
     }
 
-    .elko-card-body { padding: 12px; }
+.elko-card-body {
+  padding: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
     .elko-card-title { font-weight: 600; font-size: 14px; color: var(--elko-dark); }
     .elko-card-sub { font-size: 12px; color: #666; margin-top: 4px; }
 
-    .elko-qty {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
+.elko-qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
+}
 
+    .elko-card-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--elko-dark);
+  height: 40px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+    
     .elko-btn-qty {
       background: var(--elko-green);
       color: white;
@@ -178,28 +197,6 @@
     .elko-notify.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; display: block; }
     .elko-notify.error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; display: block; }
 
-    .elko-card {
-  display: flex;
-  flex-direction: column;
-}
-
-.elko-card-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.elko-card-title {
-  height: 40px;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.elko-qty {
-  margin-top: auto;
-}
   </style>
 </head>
 <body>
