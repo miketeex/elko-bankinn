@@ -291,7 +291,8 @@
   const FLOW_GET = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/35e9048502214aa691f1909f1f2be1d3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=COQVrXAbckH0OcoLZnE7jIOb3pS9X8IJ1nNOlP7cmGg';
   const FLOW_POST = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/35da15861bd04ef4a125fbba0d8bb8a6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ECFGUdny1wGfJybbY-H9FrquVfl4vh3y8xRkqUiqCmk';
   const FLOW_STATIONS = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/99d31cd7bd064112ae8f11fa227cecb1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YCqeHhT0B-uXOE9rSOoMHJ7NFtSsjnZJz2tWB9kG2NA';
-
+  const FLOW_CHECK = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6eaa8ea4d3684df7bab61aeb0c1ef2f9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=KV8EtZ7wEyAqPRO2jA-6tuJV_RI-FbaTgWZ4I3A-50Q';
+  
   let cart = {};
   let inventoryData = {};
 
@@ -421,7 +422,21 @@
 
     const selectedItems = Object.entries(cart).filter(([,v]) => v > 0);
 
-    try {
+try {
+  // Check for date conflicts
+  const checkRes = await fetch(FLOW_CHECK, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ DagsetningFra: fra, DagsetningTil: til })
+  });
+  const conflicts = await checkRes.json();
+  const conflictData = conflicts.value || conflicts;
+
+  if (Array.isArray(conflictData) && conflictData.length > 0) {
+    const conflictNames = conflictData.map(c => c.Vara).join(', ');
+    notify(`Eftirfarandi vörur eru ekki tiltækar á völdum dagsetningum: ${conflictNames}`, 'error');
+    return;
+  }
       for (const [itemId] of selectedItems) {
         const item = inventoryData[itemId];
         await fetch(FLOW_POST, {
