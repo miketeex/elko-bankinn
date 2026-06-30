@@ -269,11 +269,10 @@
 
   <div id="notify" class="elko-notify"></div>
 
-<div class="elko-tabs">
-  <button class="elko-page-tab active" onclick="switchPage('borrow', this)">Lána búnað</button>
-  <button class="elko-page-tab" onclick="switchPage('salur', this)">Bóka Sal</button>
-  <button class="elko-page-tab" onclick="switchPage('suggest', this)">Tillögur</button>
-</div>
+  <div class="elko-tabs">
+    <button class="elko-page-tab active" onclick="switchPage('borrow', this)">Lána búnað</button>
+    <button class="elko-page-tab" onclick="switchPage('suggest', this)">Tillögur</button>
+  </div>
 
   <!-- BORROW PAGE -->
   <div class="elko-page active" id="page-borrow">
@@ -365,56 +364,7 @@
       <button class="elko-btn" onclick="submitSuggestion()">Senda tillögu</button>
     </div>
   </div>
-<!-- SALUR BOOKING PAGE -->
-<div class="elko-page" id="page-salur">
-  <div class="elko-form active">
-    <h2>Bóka Tæknisal</h2>
-    <p style="font-size:13px; color:#666; margin-bottom:20px;">
-      Opnunartímar: Mán-Fös 09:00-19:00, Lau 11:00-18:00, Sun 12:00-18:00. Áfengi er ekki leyfilegt í salnum.
-    </p>
 
-    <div class="elko-field">
-      <label>Nafn *</label>
-      <input type="text" id="salNafn" placeholder="Fullt nafn">
-    </div>
-
-    <div class="elko-field">
-      <label>Netfang *</label>
-      <input type="email" id="salNetfang" placeholder="netfang@elko.is">
-    </div>
-
-    <div class="elko-field">
-      <label>Símanúmer *</label>
-      <input type="tel" id="salSimi" placeholder="7 stafir">
-    </div>
-
-    <div class="elko-field">
-      <label>Tilefni *</label>
-      <input type="text" id="salTilefni" placeholder="t.d. fermingarveisla, afmæli...">
-    </div>
-
-    <div class="elko-dates">
-      <div class="elko-field">
-        <label>Dagsetning *</label>
-        <input type="date" id="salDagur">
-      </div>
-      <div class="elko-field">
-        <label>Tími frá - til *</label>
-        <div style="display:flex; gap:8px;">
-          <input type="time" id="salFra">
-          <input type="time" id="salTil">
-        </div>
-      </div>
-    </div>
-
-    <div class="elko-check">
-      <input type="checkbox" id="salTerms">
-      <label for="salTerms">Ég samþykki að engin áfengi sé í salnum og að bókun sé innan opnunartíma</label>
-    </div>
-
-    <button class="elko-btn" onclick="submitSalur()">Senda bókun</button>
-  </div>
-</div>
 </div>
 
 <div class="elko-overlay" id="termsOverlay">
@@ -434,8 +384,7 @@
   const FLOW_STATIONS = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/99d31cd7bd064112ae8f11fa227cecb1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YCqeHhT0B-uXOE9rSOoMHJ7NFtSsjnZJz2tWB9kG2NA';
   const FLOW_CHECK = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6eaa8ea4d3684df7bab61aeb0c1ef2f9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=KV8EtZ7wEyAqPRO2jA-6tuJV_RI-FbaTgWZ4I3A-50Q';
   const FLOW_SUGGEST = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/b0fa0a768410489194d6d54b6d7229e9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=JGsleGVyo220qjSc0ewy8CT8lAQ9hzDP5sELB0PdcDM';
-  const FLOW_SALUR = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/db0b5ea6cf4c44869095225f671e4bfc/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=SY311pbIW5laKtoZZvkh_i2w7e6hPYc7ct6wGUQFVFg';
-  
+
   let allItems = [];
   let cart = {};
   let inventoryData = {};
@@ -676,68 +625,7 @@
       console.error(e);
     }
   }
-function getOpeningHours(dateStr) {
-  const day = new Date(dateStr).getDay(); // 0 = Sunday, 6 = Saturday
-  if (day === 0) return { open: '12:00', close: '18:00' };
-  if (day === 6) return { open: '11:00', close: '18:00' };
-  return { open: '09:00', close: '19:00' };
-}
 
-async function submitSalur() {
-  const nafn = document.getElementById('salNafn').value.trim();
-  const netfang = document.getElementById('salNetfang').value.trim();
-  const simi = document.getElementById('salSimi').value.trim();
-  const tilefni = document.getElementById('salTilefni').value.trim();
-  const dagur = document.getElementById('salDagur').value;
-  const fraTime = document.getElementById('salFra').value;
-  const tilTime = document.getElementById('salTil').value;
-  const terms = document.getElementById('salTerms').checked;
-
-  if (!nafn || !netfang || !tilefni || !dagur || !fraTime || !tilTime || !terms) {
-    notify('Fylla þarf út alla reiti og samþykkja skilmála.', 'error');
-    return;
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(netfang)) { notify('Netfang er ekki gilt.', 'error'); return; }
-  if (!/^\d{7}$/.test(simi)) { notify('Símanúmer verður að vera 7 tölustafir.', 'error'); return; }
-  if (fraTime >= tilTime) { notify('Tími til verður að vera eftir tíma frá.', 'error'); return; }
-
-  const hours = getOpeningHours(dagur);
-  if (fraTime < hours.open || tilTime > hours.close) {
-    notify(`Salurinn er aðeins opinn ${hours.open} - ${hours.close} þennan dag.`, 'error');
-    return;
-  }
-
-  const fra = `${dagur}T${fraTime}:00`;
-  const til = `${dagur}T${tilTime}:00`;
-
-  try {
-    await fetch(FLOW_SALUR, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ApiKey: API_KEY,
-        Nafn: nafn,
-        Netfang: netfang,
-        Simi: simi,
-        Tilefni: tilefni,
-        Fra: fra,
-        Til: til
-      })
-    });
-    notify('Bókunarbeiðni send! Þú færð svar í tölvupósti.', 'success');
-    document.getElementById('salNafn').value = '';
-    document.getElementById('salNetfang').value = '';
-    document.getElementById('salSimi').value = '';
-    document.getElementById('salTilefni').value = '';
-    document.getElementById('salDagur').value = '';
-    document.getElementById('salFra').value = '';
-    document.getElementById('salTil').value = '';
-    document.getElementById('salTerms').checked = false;
-  } catch(e) {
-    notify('Villa við að senda bókun. Reyndu aftur.', 'error');
-    console.error(e);
-  }
-}
   loadInventory();
   loadStations();
 </script>
