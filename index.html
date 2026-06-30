@@ -145,6 +145,31 @@
       color: white;
     }
 
+    .elko-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .elko-page-tab {
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: 2px solid var(--elko-dark);
+      background: white;
+      color: var(--elko-dark);
+      cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .elko-page-tab.active {
+      background: var(--elko-dark);
+      color: white;
+    }
+
     .elko-form {
       background: white;
       padding: 24px;
@@ -158,7 +183,7 @@
 
     .elko-field { margin-bottom: 16px; }
     .elko-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #333; }
-    .elko-field input, .elko-field select {
+    .elko-field input, .elko-field select, .elko-field textarea {
       width: 100%;
       padding: 10px;
       border: 1.5px solid var(--elko-green);
@@ -166,6 +191,8 @@
       font-size: 14px;
       font-family: 'Open Sans', sans-serif;
     }
+
+    .elko-field textarea { resize: vertical; min-height: 100px; }
 
     .elko-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
@@ -225,6 +252,9 @@
 
     .elko-notify.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; display: block; }
     .elko-notify.error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; display: block; }
+
+    .elko-page { display: none; }
+    .elko-page.active { display: block; }
   </style>
 </head>
 <body>
@@ -239,71 +269,100 @@
 
   <div id="notify" class="elko-notify"></div>
 
-  <div class="elko-cart-bar" id="cartBar">
-    <span>Valdir hlutir: <strong id="cartCount">0</strong> — Samtals magn: <strong id="cartTotal">0</strong></span>
-    <button class="elko-btn" onclick="goToForm()">Áfram →</button>
+  <div class="elko-tabs">
+    <button class="elko-page-tab active" onclick="switchPage('borrow', this)">Lána búnað</button>
+    <button class="elko-page-tab" onclick="switchPage('suggest', this)">Tillögur</button>
   </div>
 
-  <div class="elko-filter" id="filterBar">
-    <button class="elko-filter-btn active" onclick="filterCategory('all', this)">Allt</button>
-  </div>
+  <!-- BORROW PAGE -->
+  <div class="elko-page active" id="page-borrow">
 
-  <div class="elko-grid" id="inventoryGrid">
-    <p>Hleður vörulista...</p>
-  </div>
-
-  <div class="elko-form" id="submitForm">
-    <h2>Lánsupplýsingar</h2>
-
-    <div class="elko-field">
-      <label>Nafn *</label>
-      <input type="text" id="fNafn" placeholder="Fullt nafn">
+    <div class="elko-cart-bar" id="cartBar">
+      <span>Valdir hlutir: <strong id="cartCount">0</strong> — Samtals magn: <strong id="cartTotal">0</strong></span>
+      <button class="elko-btn" onclick="goToForm()">Áfram →</button>
     </div>
 
-    <div class="elko-field">
-      <label>Netfang *</label>
-      <input type="email" id="fNetfang" placeholder="netfang@elko.is">
+    <div class="elko-filter" id="filterBar">
+      <button class="elko-filter-btn active" onclick="filterCategory('all', this)">Allt</button>
     </div>
 
-    <div class="elko-field">
-      <label>Símanúmer *</label>
-      <input type="tel" id="fSimi" placeholder="7 stafir">
+    <div class="elko-grid" id="inventoryGrid">
+      <p>Hleður vörulista...</p>
     </div>
 
-    <div class="elko-field">
-      <label>Starfsstöð *</label>
-      <select id="fStarfsstod">
-        <option value="">-- Veldu starfsstöð --</option>
-      </select>
-    </div>
+    <div class="elko-form" id="submitForm">
+      <h2>Lánsupplýsingar</h2>
 
-    <div class="elko-field">
-      <label>Afhendingarstaður *</label>
-      <select id="fAfhending">
-        <option value="">-- Veldu afhendingarstað --</option>
-      </select>
-    </div>
-
-    <div class="elko-dates">
       <div class="elko-field">
-        <label>Dagsetning frá *</label>
-        <input type="date" id="fFra">
+        <label>Nafn *</label>
+        <input type="text" id="fNafn" placeholder="Fullt nafn">
       </div>
+
       <div class="elko-field">
-        <label>Dagsetning til *</label>
-        <input type="date" id="fTil">
+        <label>Netfang *</label>
+        <input type="email" id="fNetfang" placeholder="netfang@elko.is">
       </div>
+
+      <div class="elko-field">
+        <label>Símanúmer *</label>
+        <input type="tel" id="fSimi" placeholder="7 stafir">
+      </div>
+
+      <div class="elko-field">
+        <label>Starfsstöð *</label>
+        <select id="fStarfsstod">
+          <option value="">-- Veldu starfsstöð --</option>
+        </select>
+      </div>
+
+      <div class="elko-field">
+        <label>Afhendingarstaður *</label>
+        <select id="fAfhending">
+          <option value="">-- Veldu afhendingarstað --</option>
+        </select>
+      </div>
+
+      <div class="elko-dates">
+        <div class="elko-field">
+          <label>Dagsetning frá *</label>
+          <input type="date" id="fFra">
+        </div>
+        <div class="elko-field">
+          <label>Dagsetning til *</label>
+          <input type="date" id="fTil">
+        </div>
+      </div>
+
+      <span class="elko-terms-link" onclick="openTerms()">📄 Lesa skilmála</span>
+
+      <div class="elko-check">
+        <input type="checkbox" id="fTerms">
+        <label for="fTerms">Ég samþykki skilmála</label>
+      </div>
+
+      <button class="elko-btn" onclick="submitForm()">Sækja um</button>
+      <button class="elko-btn elko-btn-secondary" style="margin-left:10px;" onclick="goBack()">← Til baka</button>
     </div>
 
-    <span class="elko-terms-link" onclick="openTerms()">📄 Lesa skilmála</span>
+  </div>
 
-    <div class="elko-check">
-      <input type="checkbox" id="fTerms">
-      <label for="fTerms">Ég samþykki skilmála</label>
+  <!-- SUGGESTIONS PAGE -->
+  <div class="elko-page" id="page-suggest">
+    <div class="elko-form active">
+      <h2>Tillaga að nýjum búnaði</h2>
+
+      <div class="elko-field">
+        <label>Nafn *</label>
+        <input type="text" id="sNafn" placeholder="Fullt nafn">
+      </div>
+
+      <div class="elko-field">
+        <label>Tillaga *</label>
+        <textarea id="sTillaga" placeholder="Lýstu því sem þú vilt sjá bætt við Bankann..."></textarea>
+      </div>
+
+      <button class="elko-btn" onclick="submitSuggestion()">Senda tillögu</button>
     </div>
-
-    <button class="elko-btn" onclick="submitForm()">Sækja um</button>
-    <button class="elko-btn elko-btn-secondary" style="margin-left:10px;" onclick="goBack()">← Til baka</button>
   </div>
 
 </div>
@@ -319,10 +378,12 @@
 </div>
 
 <script>
+  const API_KEY = 'Elko-Bankinn-2026-Karamella';
   const FLOW_GET = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/35e9048502214aa691f1909f1f2be1d3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=COQVrXAbckH0OcoLZnE7jIOb3pS9X8IJ1nNOlP7cmGg';
   const FLOW_POST = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/35da15861bd04ef4a125fbba0d8bb8a6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ECFGUdny1wGfJybbY-H9FrquVfl4vh3y8xRkqUiqCmk';
   const FLOW_STATIONS = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/99d31cd7bd064112ae8f11fa227cecb1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YCqeHhT0B-uXOE9rSOoMHJ7NFtSsjnZJz2tWB9kG2NA';
   const FLOW_CHECK = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/6eaa8ea4d3684df7bab61aeb0c1ef2f9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=KV8EtZ7wEyAqPRO2jA-6tuJV_RI-FbaTgWZ4I3A-50Q';
+  const FLOW_SUGGEST = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/b0fa0a768410489194d6d54b6d7229e9/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=JGsleGVyo220qjSc0ewy8CT8lAQ9hzDP5sELB0PdcDM';
 
   let allItems = [];
   let cart = {};
@@ -333,6 +394,13 @@
     el.textContent = msg;
     el.className = 'elko-notify ' + type;
     setTimeout(() => el.className = 'elko-notify', 4000);
+  }
+
+  function switchPage(page, btn) {
+    document.querySelectorAll('.elko-page-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.elko-page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('page-' + page).classList.add('active');
   }
 
   async function loadInventory() {
@@ -480,7 +548,7 @@
       const checkRes = await fetch(FLOW_CHECK, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ DagsetningFra: fra, DagsetningTil: til })
+        body: JSON.stringify({ ApiKey: API_KEY, DagsetningFra: fra, DagsetningTil: til })
       });
       const conflicts = await checkRes.json();
       const conflictData = conflicts.value || conflicts;
@@ -513,6 +581,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            ApiKey: API_KEY,
             Nafn: nafn,
             Netfang: netfang,
             Simanumer: simi,
@@ -532,6 +601,27 @@
       goBack();
     } catch(e) {
       notify('Villa við að senda beiðni. Reyndu aftur.', 'error');
+      console.error(e);
+    }
+  }
+
+  async function submitSuggestion() {
+    const nafn = document.getElementById('sNafn').value.trim();
+    const tillaga = document.getElementById('sTillaga').value.trim();
+
+    if (!nafn || !tillaga) { notify('Fylla þarf út nafn og tillögu.', 'error'); return; }
+
+    try {
+      await fetch(FLOW_SUGGEST, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ApiKey: API_KEY, Nafn: nafn, Tillaga: tillaga })
+      });
+      notify('Takk fyrir tillöguna!', 'success');
+      document.getElementById('sNafn').value = '';
+      document.getElementById('sTillaga').value = '';
+    } catch(e) {
+      notify('Villa við að senda tillögu. Reyndu aftur.', 'error');
       console.error(e);
     }
   }
