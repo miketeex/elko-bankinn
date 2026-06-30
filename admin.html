@@ -197,10 +197,11 @@
 
     <div id="notify" class="elko-notify"></div>
 
-    <div class="elko-tabs">
-      <button class="elko-tab active" onclick="switchTab('requests', this)">Beiðnir</button>
-      <button class="elko-tab" onclick="switchTab('inventory', this)">Birgðir</button>
-    </div>
+<div class="elko-tabs">
+  <button class="elko-tab active" onclick="switchTab('requests', this)">Beiðnir</button>
+  <button class="elko-tab" onclick="switchTab('inventory', this)">Birgðir</button>
+  <button class="elko-tab" onclick="switchTab('suggestions', this)">Tillögur</button>
+</div>
 
     <!-- Requests Panel -->
     <div class="elko-panel active" id="panel-requests">
@@ -259,32 +260,55 @@
         </table>
       </div>
     </div>
+  <!-- Suggestions Panel -->
+<div class="elko-panel" id="panel-suggestions">
+  <div class="elko-filters">
+    <button class="elko-btn" onclick="loadSuggestions()">🔄 Uppfæra</button>
+  </div>
+  <div class="elko-table-wrap">
+    <table id="suggestionsTable">
+      <thead>
+        <tr>
+          <th>Tilvísun</th>
+          <th>Nafn</th>
+          <th>Tillaga</th>
+        </tr>
+      </thead>
+      <tbody id="suggestionsBody">
+        <tr><td colspan="3">Hleður...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>    
 
   </div>
 </div>
 
 <script>
   const PASSWORD = 'Elko2026';
-
+  const API_KEY = 'Elko-Bankinn-2026-Karamella';
+  
   const FLOW_REQUESTS = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/31f67dd03aef4ecfbc49c36104369741/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=nOIKq81U5PuFH53TWvfvXweoMF6OK802UiIOZleRcNY';
   const FLOW_UPDATE_STADA = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cccfb4d7f0a04cc68c58f577821be76b/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=R47t77wnCwbRNjFFkYQHYlvZ9dqJ0DqsiVmny7zklnU';
   const FLOW_UPDATE_VARA = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/692c723ba5464aeb85c402dca1112590/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=OJf_QbnbKw7FjtUy-S1JXyKyhcChzCN-DjJbCYRLMRs';
   const FLOW_GET_INVENTORY = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/35e9048502214aa691f1909f1f2be1d3/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=COQVrXAbckH0OcoLZnE7jIOb3pS9X8IJ1nNOlP7cmGg';
-
+  const FLOW_GET_SUGGESTIONS = 'https://defaultcd368b546ffe4d7dbea9014e728c66.79.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/023b580d521b436ab527fb75c1ab94b2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=DFdQknqJEecoSdAie1xB59blaLWJmhxrDB7k059P7Pw';
+  
   let allRequests = [];
   let allInventory = [];
 
-  function login() {
-    const pwd = document.getElementById('passwordInput').value;
-    if (pwd === PASSWORD) {
-      document.getElementById('loginPanel').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'block';
-      loadRequests();
-      loadInventory();
-    } else {
-      document.getElementById('loginError').style.display = 'block';
-    }
+function login() {
+  const pwd = document.getElementById('passwordInput').value;
+  if (pwd === PASSWORD) {
+    document.getElementById('loginPanel').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadRequests();
+    loadInventory();
+    loadSuggestions();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
   }
+}
 
   function notify(msg, type) {
     const el = document.getElementById('notify');
@@ -305,7 +329,7 @@
       const res = await fetch(FLOW_REQUESTS, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({ ApiKey: API_KEY })
       });
       const data = await res.json();
       allRequests = data.value || data;
@@ -359,7 +383,7 @@
       await fetch(FLOW_UPDATE_STADA, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ID: id, Stada: stada })
+        body: JSON.stringify({ ApiKey: API_KEY, ID: id, Stada: stada })
       });
       notify('Staða uppfærð!', 'success');
       loadRequests();
@@ -374,7 +398,7 @@
       const res = await fetch(FLOW_GET_INVENTORY, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+        body: JSON.stringify({ ApiKey: API_KEY })
       });
       const data = await res.json();
       allInventory = data.value || data;
@@ -422,7 +446,7 @@
       await fetch(FLOW_UPDATE_VARA, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ID: id, Magn: magn, Tiltaekt: tiltaekt })
+        body: JSON.stringify({ ApiKey: API_KEY, ID: id, Magn: magn, Tiltaekt: tiltaekt })
       });
       notify('Vara uppfærð!', 'success');
       loadInventory();
@@ -438,7 +462,7 @@
       await fetch(FLOW_UPDATE_VARA, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ID: id, Magn: 0, Tiltaekt: false })
+        body: JSON.stringify({ ApiKey: API_KEY, ID: id, Magn: 0, Tiltaekt: false })
       });
       notify('Vara merkt sem skemmd!', 'success');
       loadInventory();
@@ -447,6 +471,31 @@
       console.error(e);
     }
   }
+  async function loadSuggestions() {
+  try {
+    const res = await fetch(FLOW_GET_SUGGESTIONS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ApiKey: API_KEY })
+    });
+    const data = await res.json();
+    const items = data.value || data;
+    renderSuggestions(items);
+  } catch(e) {
+    document.getElementById('suggestionsBody').innerHTML = '<tr><td colspan="3">Villa við að sækja tillögur.</td></tr>';
+    console.error(e);
+  }
+}
+
+function renderSuggestions(items) {
+  const tbody = document.getElementById('suggestionsBody');
+  if (!items.length) { tbody.innerHTML = '<tr><td colspan="3">Engar tillögur fundust.</td></tr>'; return; }
+  tbody.innerHTML = items.map(s => `<tr>
+    <td>${s.Title || ''}</td>
+    <td>${s.Nafn || ''}</td>
+    <td>${s.Tillaga || ''}</td>
+  </tr>`).join('');
+}
 </script>
 
 </body>
